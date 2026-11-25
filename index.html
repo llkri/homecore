@@ -207,7 +207,7 @@ details p{margin-top:10px;color:var(--muted);font-family:var(--serif);font-size:
 #whisper{position:fixed;left:0;right:0;bottom:8vh;text-align:center;z-index:70;font-family:var(--serif);font-style:italic;
   font-size:24px;color:#a3140b;opacity:0;transition:opacity 2.2s;pointer-events:none;text-shadow:0 0 12px #000}
 #whisper.on{opacity:1}
-#snd{position:fixed;left:16px;bottom:16px;z-index:90;font:600 12px var(--sans);padding:8px 12px;border-radius:999px;
+#snd{display:none!important;position:fixed;left:16px;bottom:16px;z-index:90;font:600 12px var(--sans);padding:8px 12px;border-radius:999px;
   cursor:pointer;background:#fff;color:#1F1B16;border:1px solid var(--line)}
 #scare{position:fixed;inset:0;z-index:200;background:#000;display:none;place-items:center;overflow:hidden}
 #scare.on{display:grid}
@@ -244,8 +244,8 @@ details p{margin-top:10px;color:var(--muted);font-family:var(--serif);font-size:
 /* ===== TWIST ===== */
 #twist{position:fixed;inset:0;z-index:300;background:#000;display:none;place-items:center;overflow:hidden;flex-direction:column}
 #twist.on{display:grid}
-.vwrap{position:absolute;inset:0;background:#000;opacity:0;transition:opacity .25s;z-index:1}
-.vwrap.on{opacity:1}
+.vwrap{position:absolute;inset:0;background:#000;opacity:0;transition:opacity .25s;z-index:1;pointer-events:none}
+.vwrap.on{opacity:1;pointer-events:auto}
 .vwrap iframe{width:100%;height:100%;border:0;display:block}
 #skip{position:absolute;right:18px;bottom:16px;z-index:4;display:none;background:rgba(0,0,0,.55);
   color:#8a7d76;border:1px solid #2a2320;border-radius:999px;padding:8px 16px;font:600 12px var(--sans);cursor:pointer}
@@ -366,7 +366,7 @@ details p{margin-top:10px;color:var(--muted);font-family:var(--serif);font-size:
       <a href="#price" class="btn">免费试用 →</a>
       <a href="#how" class="btn ghost">它是怎么运作的</a>
     </div>
-    <p class="tiny">无需信用卡，随时可取消。* &nbsp;·&nbsp;<button id="heroSnd">开启氛围音效</button>，获得完整体验。 &nbsp;·&nbsp; 非官方粉丝作品</p>
+    <p class="tiny">无需信用卡，随时可取消。* &nbsp;·&nbsp; 非官方粉丝作品</p>
   </div>
   <div class="hubwrap">
     <div class="hub"><i></i></div>
@@ -963,8 +963,7 @@ function startAudio(){
     updateAudio();
   }catch(e){ $('#snd').textContent='♪ 音效不可用'; }
 }
-$('#snd').addEventListener('click',()=>{ if(audio){AC.close();audio=false;$('#snd').textContent='♪ 氛围音效：关'} else startAudio() });
-$('#heroSnd').addEventListener('click',startAudio);
+$('#snd').addEventListener('click',()=>{ if(audio){AC.close();audio=false;$('#snd').textContent='♪ 氛围音效：关'} else startAudio() });
 
 function updateAudio(){
   if(!audio)return;
