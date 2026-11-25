@@ -251,6 +251,12 @@ details p{margin-top:10px;color:var(--muted);font-family:var(--serif);font-size:
   color:#8a7d76;border:1px solid #2a2320;border-radius:999px;padding:8px 16px;font:600 12px var(--sans);cursor:pointer}
 #skip.on{display:block}
 #skip:hover{color:#cfc5b9}
+/* 结尾卡 */
+.fin{position:absolute;inset:0;display:none;place-items:center;text-align:center;z-index:5;
+  opacity:0;transition:opacity 1.4s;pointer-events:none}
+.fin.on{display:grid;opacity:1}
+.fin .big{font-family:var(--serif);font-size:clamp(26px,4vw,44px);color:#6f655d;letter-spacing:.2em}
+.fin .hint{margin-top:18px;font-size:12px;color:#4a423f;letter-spacing:.3em}
 .dada{position:absolute;top:34%;left:0;right:0;text-align:center;font-family:var(--serif);font-size:clamp(22px,3.4vw,40px);
   color:#cfc5b9;letter-spacing:.3em;opacity:0}
 .dada.on{opacity:1;animation:dadapop .42s ease-out}
@@ -689,6 +695,7 @@ details p{margin-top:10px;color:var(--muted);font-family:var(--serif);font-size:
 <div id="twist">
   <div class="vwrap" id="vwrap"><iframe id="bili" title="好想玩原神" allow="autoplay; fullscreen; encrypted-media" allowfullscreen scrolling="no" frameborder="0"></iframe></div>
   <button id="skip">跳过 ›</button>
+  <div class="fin" id="ending"><div><div class="big">（完）</div><div class="hint">往上滚 · 或者点一下</div></div></div>
   <div class="dada" id="dada">哒 哒 哒 哒 哒</div>
   <div class="gen" id="gen">
     <h1>好想玩原神</h1>
@@ -890,7 +897,7 @@ const MEME_T=10;                     /* 起点：第 10 秒 */
 const MEME_END=39;                   /* 终点：放到这里为止 */
 const MEME_MS=(MEME_END-MEME_T)*1000;
 
-let inside=false;
+let inside=false, vidT=null, endT2=null;
 function cut(){
   if(inside)return;
   inside=true;
@@ -899,20 +906,36 @@ function cut(){
   tw.classList.add('on');
   powerDown();                       /* 一声关机闷响 */
   /* 死寂 1.1 秒，然后视频直接砸下来 */
-  setTimeout(()=>{
+  vidT=setTimeout(()=>{
     $('#bili').src='https://player.bilibili.com/player.html?isOutside=true&bvid='+MEME_BV
       +'&p=1&t='+MEME_T+'&autoplay=1&danmaku=1&high_quality=1';
     $('#vwrap').classList.add('on');
     $('#skip').classList.add('on');
   },1100);
-  setTimeout(afterVideo,1100+MEME_MS);
+  endT2=setTimeout(afterVideo,1100+MEME_MS);
 }
 function afterVideo(){
-  /* 后面什么都没有了：播完就黑，结束。 */
+  /* 提前点「跳过」时，把没触发的播放器和计时器一起掐掉 */
+  clearTimeout(vidT); clearTimeout(endT2); vidT=null; endT2=null;
   $('#skip').classList.remove('on');
   $('#vwrap').classList.remove('on');
-  $('#twist').style.background='#000';
+  $('#bili').src='about:blank';
+  /* 播完先黑着，3 秒后给一张结尾卡，再放人走 */
+  setTimeout(()=>{ $('#ending').classList.add('on'); finReady=true; },3000);
 }
+/* 黑幕退场：点一下 / 往上滚 / 按键 —— 网站会一格一格亮回来 */
+let finReady=false, leaving=false;
+function leaveTwist(){
+  if(!finReady||leaving)return;
+  leaving=true;
+  const tw=$('#twist');
+  tw.style.transition='opacity 1s';
+  tw.style.opacity='0';
+  setTimeout(()=>{ tw.classList.remove('on'); tw.style.opacity=''; tw.style.transition=''; },1050);
+}
+$('#twist').addEventListener('click',leaveTwist);
+$('#twist').addEventListener('wheel',()=>{ if(finReady)leaveTwist(); },{passive:true});
+addEventListener('keydown',()=>{ if(finReady)leaveTwist(); });
 $('#skip').addEventListener('click',afterVideo);
 $('#startBtn').addEventListener('click',()=>{ $('#patch').classList.add('on'); });
 $('#gotBtn').addEventListener('click',()=>{ location.hash='#top'; location.reload(); });
