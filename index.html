@@ -343,7 +343,6 @@ details p{margin-top:10px;color:var(--muted);font-family:var(--serif);font-size:
 <body>
 <canvas id="noise" width="320" height="180"></canvas>
 <div id="vig"></div><div id="scan"></div><div id="whisper"></div>
-<button id="snd">♪ 氛围音效：关</button>
 
 <nav class="nav"><div class="wrap in">
   <a href="#top" class="logo"><i class="dot"></i><span>宅心</span></a>
@@ -959,11 +958,11 @@ function startAudio(){
     const ns=AC.createBufferSource();ns.buffer=nbuf;ns.loop=true;
     const bp=AC.createBiquadFilter();bp.type='bandpass';bp.frequency.value=700;bp.Q.value=.7;
     noiseG=AC.createGain();noiseG.gain.value=0;ns.connect(bp);bp.connect(noiseG);noiseG.connect(master);ns.start();
-    audio=true;$('#snd').textContent='♪ 氛围音效：开';
+    audio=true;
     updateAudio();
-  }catch(e){ $('#snd').textContent='♪ 音效不可用'; }
+    }catch(e){}
 }
-$('#snd').addEventListener('click',()=>{ if(audio){AC.close();audio=false;$('#snd').textContent='♪ 氛围音效：关'} else startAudio() });
+
 
 function updateAudio(){
   if(!audio)return;
